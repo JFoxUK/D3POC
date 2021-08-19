@@ -6,11 +6,9 @@
  * @last modified by  : Jonathan Fox
 **/
 import { LightningElement, api, track } from 'lwc';
-//import d3js from '@salesforce/resourceUrl/d3js';
 import d3js from '@salesforce/resourceUrl/d3jsv7';
 import { loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-//import DATA from './DATA';
 
 export default class D3ChartPoc extends LightningElement {
     svgWidth = 400;
@@ -141,7 +139,7 @@ export default class D3ChartPoc extends LightningElement {
         // A function that update the chart for given boundaries
         function updateChart() {
 
-        extent = d3.event.selection
+        extent = d3.event.selection;
 
         // If no selection, back to initial coordinate. Otherwise, update X axis domain
         if(!extent){
