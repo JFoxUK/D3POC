@@ -6,7 +6,8 @@
  * @last modified by  : Jonathan Fox
 **/
 import { LightningElement, api, track } from 'lwc';
-import d3js from '@salesforce/resourceUrl/d3js';
+//import d3js from '@salesforce/resourceUrl/d3js';
+import d3js from '@salesforce/resourceUrl/d3jsv7';
 import { loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 //import DATA from './DATA';
@@ -122,6 +123,44 @@ export default class D3ChartPoc extends LightningElement {
             .on("mouseleave", mouseleave);
 
 
+        // Add the brush feature using the d3.brush function
+        var brush = d3.brushX()                
+            .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+            .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+
+        // Add the brushing
+        svg
+        .append("g")
+            .attr("class", "brush")
+            .call(brush);
+
+        // A function that set idleTimeOut to null
+        var idleTimeout
+        function idled() { idleTimeout = null; }
+
+        // A function that update the chart for given boundaries
+        function updateChart() {
+
+        extent = d3.event.selection
+
+        // If no selection, back to initial coordinate. Otherwise, update X axis domain
+        if(!extent){
+            if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+            x.domain([ 4,8])
+        }else{
+            x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+            svg.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+        }
+
+        // Update axis and circle position
+        xAxis.transition().duration(1000).call(d3.axisBottom(x))
+        svg
+            .selectAll("circle")
+            .transition().duration(1000)
+            .attr("cx", function (d) { return x(d.Sepal_Length); } )
+            .attr("cy", function (d) { return y(d.Petal_Length); } )
+
+        }
     }
 
 }
