@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : Jonathan Fox
  * @group             : 
- * @last modified on  : 19-08-2021
+ * @last modified on  : 20-08-2021
  * @last modified by  : Jonathan Fox
 **/
 import { LightningElement, api, track } from 'lwc';
@@ -42,7 +42,7 @@ export default class D3ChartPoc extends LightningElement {
     }
 
     renderScatterPlot(data) {
-        console.log(data);
+        //console.log(data);
 
         // set the dimensions and margins of the graph
         const margin = {top: 10, right: 30, bottom: 30, left: 160},
@@ -107,7 +107,7 @@ export default class D3ChartPoc extends LightningElement {
 
         // Add dots
         svg.append('g')
-            .selectAll('dot')
+            .selectAll(this.template.querySelector('dot'))
             .data(data)
             .enter()
             .append('circle')
@@ -126,7 +126,8 @@ export default class D3ChartPoc extends LightningElement {
             .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
             .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
 
-        // Add the brushing
+        //Add the brushing
+        // ** WHEN BRUSHIGN IS NOW ADDED TOOL TIP DOES NOT WORK
         svg
         .append("g")
             .attr("class", "brush")
@@ -137,26 +138,32 @@ export default class D3ChartPoc extends LightningElement {
         function idled() { idleTimeout = null; }
 
         // A function that update the chart for given boundaries
-        function updateChart() {
+        function updateChart(event) {
+            var extent = event.selection;   
+            
+                     
 
-        extent = d3.event.selection;
+            // If no selection, back to initial coordinate. Otherwise, update X axis domain
+            if(!extent){
+                if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+                x.domain([ 4,8]);
+                console.log('No extent');
+            }else{
+                console.log('Extent found');
+                console.table(extent);
+                console.log("event > " + JSON.stringify(event));
+                
+                x.domain([ x.invert(extent[0]), x.invert(extent[1]) ]);
+                svg.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+            }
 
-        // If no selection, back to initial coordinate. Otherwise, update X axis domain
-        if(!extent){
-            if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-            x.domain([ 4,8])
-        }else{
-            x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
-            svg.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
-        }
-
-        // Update axis and circle position
-        xAxis.transition().duration(1000).call(d3.axisBottom(x))
-        svg
-            .selectAll("circle")
-            .transition().duration(1000)
-            .attr("cx", function (d) { return x(d.Sepal_Length); } )
-            .attr("cy", function (d) { return y(d.Petal_Length); } )
+            // Update axis and circle position
+            x.transition().duration(1000).call(d3.axisBottom(x))
+            svg
+                .selectAll(this.template.querySelector('circle'))
+                .transition().duration(1000)
+                .attr("cx", function (d) { return x(d.Sepal_Length); } )
+                .attr("cy", function (d) { return y(d.Petal_Length); } )
 
         }
     }
