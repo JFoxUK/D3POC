@@ -1,6 +1,6 @@
 # D3POC
 
-Raw files for LWC in Experience cloud to produce a chart using D3.js with the functionality of - Brushign for Zooming.
+Raw files for LWC in Experience cloud to produce a chart using D3.js with the functionality of - Brushing for Zooming.
 
 Upload D3.js as a static resource in your salesforce org. 
 
