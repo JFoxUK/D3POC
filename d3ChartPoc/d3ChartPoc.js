@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : Jonathan Fox
  * @group             : 
- * @last modified on  : 20-08-2021
+ * @last modified on  : 23-08-2021
  * @last modified by  : Jonathan Fox
 **/
 import { LightningElement, api, track } from 'lwc';
@@ -11,8 +11,8 @@ import { loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class D3ChartPoc extends LightningElement {
-    svgWidth = 400;
-    svgHeight = 400;
+    svgWidth = 300;
+    svgHeight = 600;
 
     error;
     chart;
@@ -45,15 +45,16 @@ export default class D3ChartPoc extends LightningElement {
         //console.log(data);
 
         // set the dimensions and margins of the graph
-        const margin = {top: 10, right: 30, bottom: 30, left: 160},
-            width = 760 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
+        const margin = {top: 10, right: 30, bottom: 30, left: 40},
+            width = 350 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
         const svg = d3.select(this.template.querySelector('.scatterplot'))
             .append('svg')
             .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
+           .attr('height', height + margin.top + margin.bottom)
+          
             .append('g')
             .attr('transform',
                 'translate(' + margin.left + ',' + margin.top + ')');
@@ -63,7 +64,7 @@ export default class D3ChartPoc extends LightningElement {
         const x = d3.scaleLinear()
             .domain(d3.extent(data, d => d.open))
             .range([0, width]);
-        svg.append('g')
+       var xAXis= svg.append('g')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3.axisBottom(x));
 
@@ -76,7 +77,7 @@ export default class D3ChartPoc extends LightningElement {
 
 
         // create a tooltip
-        const tooltip = d3.select(this.template.querySelector('.scatterplot'))
+        const tooltip = d3.select(this.template.querySelector('.scatterplot'))     
             .append('span')
             .style('opacity', 0)
             .attr('class', 'tooltip')
@@ -104,6 +105,7 @@ export default class D3ChartPoc extends LightningElement {
                 .style('opacity', 0)
         }
 
+        
 
         // Add dots
         svg.append('g')
@@ -142,11 +144,11 @@ export default class D3ChartPoc extends LightningElement {
             var extent = event.selection;   
             
                      
-
+          
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if(!extent){
                 if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-                x.domain([ 4,8]);
+                x.domain(d3.extent(data, d => d.open));
                 console.log('No extent');
             }else{
                 console.log('Extent found');
@@ -156,16 +158,28 @@ export default class D3ChartPoc extends LightningElement {
                 x.domain([ x.invert(extent[0]), x.invert(extent[1]) ]);
                 svg.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
             }
-
-            // Update axis and circle position
-            x.transition().duration(1000).call(d3.axisBottom(x))
+         
+           //zoom();
+         //   Update axis and circle position
+         xAXis.transition().duration(1000).call(d3.axisBottom(x))
             svg
-                .selectAll(this.template.querySelector('circle'))
+                .selectAll('circle')
                 .transition().duration(1000)
-                .attr("cx", function (d) { return x(d.Sepal_Length); } )
-                .attr("cy", function (d) { return y(d.Petal_Length); } )
-
+                .attr("cx", function (d) { return x(d.open); } )
+                .attr("cy", function (d) { return y(d.close); } )
+         
         }
+        // function zoom() {
+           
+        //     var t = svg.transition().duration(750);
+        //     svg.select(".axis--x").transition(t).call(x);
+        //     svg.select(".axis--y").transition(t).call(y);
+        //     console.log(svg.selectAll("circle"));
+        //     svg.selectAll("circle").transition(t)
+        //         .attr("cx", function(d) { return x(d.open); })
+        //         .attr("cy", function(d) { return y(d.close); });
+                
+        //   }
     }
 
 }
