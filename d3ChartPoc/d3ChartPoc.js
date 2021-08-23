@@ -169,17 +169,6 @@ export default class D3ChartPoc extends LightningElement {
                 .attr("cy", function (d) { return y(d.close); } )
          
         }
-        // function zoom() {
-           
-        //     var t = svg.transition().duration(750);
-        //     svg.select(".axis--x").transition(t).call(x);
-        //     svg.select(".axis--y").transition(t).call(y);
-        //     console.log(svg.selectAll("circle"));
-        //     svg.selectAll("circle").transition(t)
-        //         .attr("cx", function(d) { return x(d.open); })
-        //         .attr("cy", function(d) { return y(d.close); });
-                
-        //   }
     }
 
 }
