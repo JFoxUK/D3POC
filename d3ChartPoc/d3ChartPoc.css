@@ -1,0 +1,32 @@
+.tooltip {
+    background-color: rgba(187, 187, 187, 0.7);
+    border-radius: 5px;
+    height: 18px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    text-align: center;
+  }
+.axisRed line{
+    stroke: red;
+  }
+  
+  .axisRed path{
+    stroke: red;
+  }
+  
+  .axisRed text{
+    fill: red;
+  } 
+
+  .axisBlue line{
+    stroke: rgb(26, 41, 247);
+  }
+  
+  .axisBlue path{
+    stroke: rgb(26, 41, 247);
+  }
+  
+  .axisBlue text{
+    fill: rgb(26, 41, 247);
+  }
